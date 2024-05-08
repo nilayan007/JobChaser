@@ -12,7 +12,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
     class Meta :
         model = User
-        fields = ['email','password','password2','first_name','last_name','age','year_of_experience', 'skills', 'about','phone',]
+        fields = ['email','password','password2','first_name','middle_name','last_name','year_of_experience', 'skills', 'about','phone','date_of_birth','gender']
         extra_kwargs={
             'password':{'write_only':True}
         }
