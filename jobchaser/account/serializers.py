@@ -116,5 +116,5 @@ class UserPasswordResetSerializer(serializers.Serializer):
 class AlgorithmViewSerializer(serializers.ModelSerializer):
        class Meta:
         model = User
-        fields = ['skills']      
+        fields = ['skills','year_of_experience']      
        

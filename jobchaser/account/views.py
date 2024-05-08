@@ -92,13 +92,16 @@ class UserPasswordResetView(APIView):
 class AlgorithmView(APIView):
     renderer_classes = [UserRenderer]  
     permission_classes = [IsAuthenticated]  
-    def post(self,request,format=None):
+    def get(self,request,format=None):
         serializer = AlgorithmViewSerializer(request.user)
         #if serializer.is_valid():
     
        
         skills1 = serializer.data.get('skills')
-        user_skills = skills1.split(',')
+        user_exp = serializer.data.get('year_of_experience')
+        original_skills = skills1.split(',')
+        user_skills =  [item.upper() for item in original_skills]
+        print(user_exp)
         print(user_skills)
         # Read the CSV file
         csv_file_path = "./account/dataset/jobss.csv"
@@ -113,19 +116,26 @@ class AlgorithmView(APIView):
             # ALGORITHM LOGIC STARTS
             jobs = data['Job Title']
             skills = data['Key Skills'].apply(lambda x: str(x)) # Convert to string
-            data.drop(data.columns[[1]], axis=1, inplace=True)
+            #data.drop(data.columns[[1]], axis=1, inplace=True)
             vectorizer = TfidfVectorizer()
             skill_vectors = vectorizer.fit_transform(skills)
             user_vector = vectorizer.transform(user_skills)
             similarities = cosine_similarity(user_vector, skill_vectors)
             lst=[]
             for i,column in enumerate(similarities.T):
+                #if isinstance(data.iat[i, 1], str):
                 lst.append(sum(column)/len(data.iat[i,1].split("|")))
+                #else:
+        # Handle non-string values (e.g., assign 0 or another value)
+                    #lst.append(0)  # Assuming 0 similarity for non-strings    
             #print(*lst)
             data.insert(10,"similarities",lst,True)
             data=data.sort_values(by=["similarities"],ascending=False)
-            df1=data.head(5)
-            print(df1[["Job Title","sal","Location"]])
+            filtered_data = data[data['Needed_Exp'] <= user_exp]
+            #df1=data.head(5)
+            filtered_data = filtered_data.sort_values(by=["similarities"], ascending=False)
+            df1 = filtered_data.head(5)
+            print(df1[["Job Title","sal","Location","similarities","Needed_Exp"]])
 
             #ALGORITHM LOGIC ENDS 
             
