@@ -11,34 +11,34 @@ from account.utils import Utill
 class EducationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Education
-        fields = ['id','degree', 'specialization', 'start_date', 'end_date', 'institution']
+        fields = ['id','degree', 'specialisation', 'start', 'end', 'school']
 class WorkExperienceSerializer(serializers.ModelSerializer) :
     class Meta:
         model = WorkExperience
-        fields = ['id','organisation','top_skills','still_work']       
+        fields = ['id','organisation','topSkill','current','start', 'end']       
         
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
-    educations = EducationSerializer(many=True)  # Nested serializer for Education
-    Workexperiences = WorkExperienceSerializer(many=True,required=False)
+    confirmPassword = serializers.CharField(style={'input_type':'password'}, write_only=True)
+    education = EducationSerializer(many=True)  # Nested serializer for Education
+    Work = WorkExperienceSerializer(many=True,required=False)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'password2', 'first_name', 'middle_name', 'last_name', 'year_of_experience','month_of_experience', 'skills', 'about', 'phone', 'date_of_birth', 'gender', 'educations','Workexperiences']
+        fields = ['email', 'password', 'confirmPassword', 'firstName', 'middleName', 'lastName', 'yoe','moe', 'skill', 'about','dob', 'gender', 'education','Work']
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def validate(self, attrs):
         password = attrs.get('password')
-        password2 = attrs.get('password2')
-        if password != password2:
+        confirmPassword = attrs.get('confirmPassword')
+        if password != confirmPassword:
             raise serializers.ValidationError('Password and confirm password do not match')
         return attrs
 
     def create(self, validated_data):
-        educations_data = validated_data.pop('educations', None)  # Retrieve education data
-        workexperince_data = validated_data.pop('Workexperiences',None)
+        educations_data = validated_data.pop('education', None)  # Retrieve education data
+        workexperince_data = validated_data.pop('Work',None)
         user = User.objects.create_user(**validated_data)  # Create User instance
         if educations_data:
             for education_data in educations_data:
@@ -61,7 +61,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','email','first_name','last_name']
+        fields = ['id','email','firstName','lastName']
 
                
 #passord change serializer 
@@ -69,10 +69,10 @@ class UserChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=255,style={'input_type':'password'},write_only=True)      
     password2 = serializers.CharField(max_length=255,style={'input_type':'password'},write_only=True)    
     class Meta:
-        fields = ['password','password2']
+        fields = ['password','confirmPassword']
     def validate(self, attrs):
         password = attrs.get('password')
-        password2 = attrs.get('password2')
+        password2 = attrs.get('confirmPassword')
         user = self.context.get('user')
         if password != password2:
             raise serializers.ValidationError('password and confirm password does not match')
@@ -113,11 +113,11 @@ class UserPasswordResetSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=255,style={'input_type':'password'},write_only=True)      
     password2 = serializers.CharField(max_length=255,style={'input_type':'password'},write_only=True)    
     class Meta:
-        fields = ['password','password2']
+        fields = ['password','confirmPassword']
     def validate(self, attrs):
         try:
             password = attrs.get('password')
-            password2 = attrs.get('password2')
+            password2 = attrs.get('confirmPassword')
             uid = self.context.get('uid')
             token = self.context.get('token')
             if password != password2:
@@ -138,5 +138,5 @@ class UserPasswordResetSerializer(serializers.Serializer):
 class AlgorithmViewSerializer(serializers.ModelSerializer):
        class Meta:
         model = User
-        fields = ['skills','year_of_experience']      
+        fields = ['skill','yoe']      
        
