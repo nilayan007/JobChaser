@@ -1,31 +1,53 @@
 
 from xml.dom import ValidationErr
 from rest_framework import serializers
-from account.models import User
+from account.models import User,Education,WorkExperience
 from django.utils.encoding import smart_str, force_bytes , DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from account.utils import Utill
 #user registration serializer
+
+class EducationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Education
+        fields = ['id','degree', 'specialization', 'start_date', 'end_date', 'institution']
+class WorkExperienceSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = WorkExperience
+        fields = ['id','organisation','top_skills','still_work']       
+        
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    #we are writing password2 because we have to confirm the password on registration field
     password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
-    class Meta :
+    educations = EducationSerializer(many=True)  # Nested serializer for Education
+    Workexperiences = WorkExperienceSerializer(many=True,required=False)
+
+    class Meta:
         model = User
-        fields = ['email','password','password2','first_name','middle_name','last_name','year_of_experience', 'skills', 'about','phone','date_of_birth','gender']
-        extra_kwargs={
-            'password':{'write_only':True}
+        fields = ['email', 'password', 'password2', 'first_name', 'middle_name', 'last_name', 'year_of_experience','month_of_experience', 'skills', 'about', 'phone', 'date_of_birth', 'gender', 'educations','Workexperiences']
+        extra_kwargs = {
+            'password': {'write_only': True}
         }
-    #validating password and confirm password are same or not 
+
     def validate(self, attrs):
         password = attrs.get('password')
         password2 = attrs.get('password2')
         if password != password2:
-            raise serializers.ValidationError('password and confirm password does not match')
-        return attrs 
-    
+            raise serializers.ValidationError('Password and confirm password do not match')
+        return attrs
+
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        educations_data = validated_data.pop('educations', None)  # Retrieve education data
+        workexperince_data = validated_data.pop('Workexperiences',None)
+        user = User.objects.create_user(**validated_data)  # Create User instance
+        if educations_data:
+            for education_data in educations_data:
+                Education.objects.create(user=user, **education_data)
+        if workexperince_data:
+            for workexperinces_data in workexperince_data:
+                WorkExperience.objects.create(user=user, **workexperinces_data)        
+        return user
+
     
 #user login serializer 
 

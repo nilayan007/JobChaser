@@ -1,8 +1,10 @@
 from django.contrib import admin
-from account.models import User
+from account.models import User,Education
 from django.contrib.auth.models import Group
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+admin.site.register(Education)
+
 class UserModelAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     
@@ -13,7 +15,7 @@ class UserModelAdmin(BaseUserAdmin):
     list_filter = ["is_admin"]
     fieldsets = [
         ('User Credentials', {"fields": ["email", "password"]}),
-        ("Personal info", {"fields": ['first_name','last_name','age','year_of_experience', 'skills', 'about','phone',]}),
+        ("Personal info", {"fields": ['first_name','last_name','user_age','year_of_experience', 'skills', 'about','phone',]}),
         ("Permissions", {"fields": ["is_admin"]}),
     ]
     # add_fieldsets is not a standard ModelAdmin attribute. UserModelAdmin
@@ -23,7 +25,7 @@ class UserModelAdmin(BaseUserAdmin):
             None,
             {
                 "classes": ["wide"],
-                "fields": ['email','password','password2','first_name','last_name','age','year_of_experience', 'skills', 'about','phone',],
+                "fields": ['email','password','password2','first_name','last_name','year_of_experience','user_age', 'skills', 'about','phone',],
             },
         ),
     ]
