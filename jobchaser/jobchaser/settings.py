@@ -221,7 +221,11 @@ SIMPLE_JWT = {
 }
 
 PASSWORD_RESET_TIMEOUT = 900 # 900 sec = 15min 
-CORS_ALLOWED_ORIGINS = ['*']
+CORS_ALLOWED_ORIGINS = [
+    'https://job-chazzer-frontend.vercel.app',
+     'https://example.com',  # Add your frontend URL here
+    'http://localhost:3000'
+]
 
 
 ALLOWED_HOSTS = ['*']
