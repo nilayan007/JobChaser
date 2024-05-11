@@ -58,12 +58,32 @@ class UserLoginSerializer(serializers.ModelSerializer):
         fields = ['email','password']    
         
 #profle serializer      
+
 class UserProfileSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='pk', read_only=True)
+    education = EducationSerializer(many=True)
+    work = WorkExperienceSerializer(many=True)
+
     class Meta:
         model = User
-        fields = ['id','email','firstName','lastName']
+        fields = ['id','email','user_age', 'firstName', 'middleName', 'lastName', 'yoe', 'moe', 'skill', 'about', 'dob', 'gender', 'education', 'work']
 
-               
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        user_id = data['id']
+        
+        # Retrieve related education instances for the user
+        education_instances = Education.objects.filter(user_id=user_id)
+        education_serializer = EducationSerializer(education_instances, many=True)
+        data['education'] = education_serializer.data
+
+        # Retrieve related work experience instances for the user
+        work_instances = WorkExperience.objects.filter(user_id=user_id)
+        work_serializer = WorkExperienceSerializer(work_instances, many=True)
+        data['work'] = work_serializer.data
+
+        return data  
+              
 #passord change serializer 
 class UserChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=255,style={'input_type':'password'},write_only=True)      
@@ -140,3 +160,6 @@ class AlgorithmViewSerializer(serializers.ModelSerializer):
         model = User
         fields = ['skill','yoe']      
        
+class AlgorithmInputSerializer(serializers.Serializer):
+    skill = serializers.CharField()
+    yoe = serializers.IntegerField()       
