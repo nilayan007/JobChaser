@@ -1,10 +1,10 @@
 from django.contrib import admin
-from account.models import User,Education
+from account.models import User,Education,WorkExperience
 from django.contrib.auth.models import Group
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 admin.site.register(Education)
-
+admin.site.register(WorkExperience)
 class UserModelAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     

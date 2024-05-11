@@ -20,11 +20,11 @@ class WorkExperienceSerializer(serializers.ModelSerializer) :
 class UserRegistrationSerializer(serializers.ModelSerializer):
     confirmPassword = serializers.CharField(style={'input_type':'password'}, write_only=True)
     education = EducationSerializer(many=True)  # Nested serializer for Education
-    Work = WorkExperienceSerializer(many=True,required=False)
+    work = WorkExperienceSerializer(many=True,required=False)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'confirmPassword', 'firstName', 'middleName', 'lastName', 'yoe','moe', 'skill', 'about','dob', 'gender', 'education','Work']
+        fields = ['email', 'password', 'confirmPassword', 'firstName', 'middleName', 'lastName', 'yoe','moe', 'skill', 'about','dob', 'gender', 'education','work']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -38,7 +38,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         educations_data = validated_data.pop('education', None)  # Retrieve education data
-        workexperince_data = validated_data.pop('Work',None)
+        workexperince_data = validated_data.pop('work',None)
         user = User.objects.create_user(**validated_data)  # Create User instance
         if educations_data:
             for education_data in educations_data:
@@ -81,7 +81,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         work_instances = WorkExperience.objects.filter(user_id=user_id)
         work_serializer = WorkExperienceSerializer(work_instances, many=True)
         data['work'] = work_serializer.data
-
+        data['skill'] = data['skill'].split(',')
         return data  
               
 #passord change serializer 
@@ -163,3 +163,57 @@ class AlgorithmViewSerializer(serializers.ModelSerializer):
 class AlgorithmInputSerializer(serializers.Serializer):
     skill = serializers.CharField()
     yoe = serializers.IntegerField()       
+    
+    
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    education = EducationSerializer(many=True)
+    work = WorkExperienceSerializer(many=True, required=False)
+
+    class Meta:
+        model = User
+        fields = ['email', 'firstName', 'middleName', 'lastName', 'yoe', 'moe', 'skill', 'about', 'dob', 'gender', 'education', 'work']
+
+    def update(self, instance, validated_data):
+        educations_data = validated_data.pop('education', None)
+        workexperience_data = validated_data.pop('work', None)
+
+        # Update User fields
+        instance.email = validated_data.get('email', instance.email)
+        instance.firstName = validated_data.get('firstName', instance.firstName)
+        instance.middleName = validated_data.get('middleName', instance.middleName)
+        instance.lastName = validated_data.get('lastName', instance.lastName)
+        instance.yoe = validated_data.get('yoe', instance.yoe)
+        instance.moe = validated_data.get('moe', instance.moe)
+        instance.skill = validated_data.get('skill', instance.skill)
+        instance.about = validated_data.get('about', instance.about)
+        instance.dob = validated_data.get('dob', instance.dob)
+        instance.gender = validated_data.get('gender', instance.gender)
+        instance.save()
+
+        # Update or Create nested Education objects
+        if educations_data:
+            for education_data in educations_data:
+                education_id = education_data.get('id', None)
+                if education_id:
+                    education_instance = Education.objects.filter(user=instance, id=education_id).first()
+                    if education_instance:
+                        EducationSerializer().update(education_instance, education_data)
+                    else:
+                        Education.objects.create(user=instance, **education_data)
+                else:
+                    Education.objects.create(user=instance, **education_data)
+
+        # Update or Create nested WorkExperience objects
+        if workexperience_data:
+            for workexperience_data in workexperience_data:
+                work_id = workexperience_data.get('id', None)
+                if work_id:
+                    work_instance = WorkExperience.objects.filter(user=instance, id=work_id).first()
+                    if work_instance:
+                        WorkExperienceSerializer().update(work_instance, workexperience_data)
+                    else:
+                        WorkExperience.objects.create(user=instance, **workexperience_data)
+                else:
+                    WorkExperience.objects.create(user=instance, **workexperience_data)
+
+        return instance

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from account.serializers import AlgorithmInputSerializer, UserRegistrationSerializer , UserLoginSerializer,UserProfileSerializer,UserChangePasswordSerializer,SendPasswordResetEmailSerializer,UserPasswordResetSerializer,AlgorithmViewSerializer
+from account.serializers import AlgorithmInputSerializer, UserProfileUpdateSerializer, UserRegistrationSerializer , UserLoginSerializer,UserProfileSerializer,UserChangePasswordSerializer,SendPasswordResetEmailSerializer,UserPasswordResetSerializer,AlgorithmViewSerializer
 from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework.renderers import JSONRenderer
@@ -297,4 +297,15 @@ class FindAlgorithmView(APIView):
             print(error_msg)
             print(i)# Print the error message
             return Response({'error': error_msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)        
-        
+
+class UserProfileUpdateView(APIView):
+    renderer_classes = [UserRenderer]  
+    permission_classes = [IsAuthenticated]  
+
+    def patch(self, request, format=None):
+        user = request.user
+        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)       
