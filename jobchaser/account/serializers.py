@@ -6,12 +6,15 @@ from django.utils.encoding import smart_str, force_bytes , DjangoUnicodeDecodeEr
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from account.utils import Utill
+from datetime import datetime
+
 #user registration serializer
 
 class EducationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Education
         fields = ['id','degree', 'specialisation', 'start', 'end', 'school']
+    
 class WorkExperienceSerializer(serializers.ModelSerializer) :
     class Meta:
         model = WorkExperience
@@ -19,6 +22,7 @@ class WorkExperienceSerializer(serializers.ModelSerializer) :
         extra_kwargs = {
             'end': {'allow_null': True}
         }
+
         
 class UserRegistrationSerializer(serializers.ModelSerializer):
     confirmPassword = serializers.CharField(style={'input_type':'password'}, write_only=True)
@@ -27,7 +31,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'confirmPassword', 'firstName', 'middleName', 'lastName', 'yoe','moe', 'skill', 'about','dob', 'gender', 'education','work']
+        fields = ['email', 'password', 'confirmPassword', 'firstName', 'middleName', 'lastName', 'yoe','moe', 'skill', 'about','dob', 'gender', 'education','work','phone','location']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -69,7 +73,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id','email','user_age', 'firstName', 'middleName', 'lastName', 'yoe', 'moe', 'skill', 'about', 'dob', 'gender', 'education', 'work']
+        fields = ['id','email','user_age', 'firstName', 'middleName', 'lastName', 'yoe', 'moe', 'skill', 'about', 'dob', 'gender', 'education', 'work','phone','location']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -84,6 +88,26 @@ class UserProfileSerializer(serializers.ModelSerializer):
         work_instances = WorkExperience.objects.filter(user_id=user_id)
         work_serializer = WorkExperienceSerializer(work_instances, many=True)
         data['work'] = work_serializer.data
+       # Extract and format start and end years (with error handling)
+        for item in data['education']:
+            if item['start']:
+                date_string = item['start']
+                date_object = datetime.strptime(date_string, "%Y-%m-%d")
+                item['start'] = date_object.year
+            if item['end']:
+                date_string = item['end']
+                date_object = datetime.strptime(date_string, "%Y-%m-%d")
+                item['end'] = date_object.year
+        for item in data['work']:
+            if item['start']:
+                date_string = item['start']
+                date_object = datetime.strptime(date_string, "%Y-%m-%d")
+                item['start'] = date_object.year
+            if item['end']:
+                date_string = item['end']
+                date_object = datetime.strptime(date_string, "%Y-%m-%d")
+                item['end'] = date_object.year or None
+
         data['skill'] = data['skill'].split(',')
         return data  
               
@@ -174,7 +198,7 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'firstName', 'middleName', 'lastName', 'yoe', 'moe', 'skill', 'about', 'dob', 'gender', 'education', 'work']
+        fields = ['email', 'firstName', 'middleName', 'lastName', 'yoe', 'moe', 'skill', 'about', 'dob', 'gender', 'education', 'work','phone','location']
 
     def update(self, instance, validated_data):
         educations_data = validated_data.pop('education', None)
@@ -191,6 +215,8 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         instance.about = validated_data.get('about', instance.about)
         instance.dob = validated_data.get('dob', instance.dob)
         instance.gender = validated_data.get('gender', instance.gender)
+        instance.location = validated_data.get('location', instance.location)
+        instance.phone = validated_data.get('phone', instance.phone)
         instance.save()
 
         # Update or Create nested Education objects

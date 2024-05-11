@@ -7,11 +7,11 @@ from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, firstName, middleName, lastName, dob, education=None,work=None, password=None, confirmPassword=None, **extra_fields):        
+    def create_user(self, email, firstName, middleName, lastName,location, dob, education=None,work=None, password=None, confirmPassword=None, **extra_fields):        
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
-        user = self.model(email=email, firstName=firstName, middleName=middleName, lastName=lastName, dob=dob, **extra_fields)
+        user = self.model(email=email, firstName=firstName, middleName=middleName, lastName=lastName,location=location, dob=dob, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         
@@ -23,9 +23,9 @@ class CustomUserManager(BaseUserManager):
         
         return user
 
-    def create_superuser(self, email, firstName,middleName, lastName,yoe,phone,dob,gender,password=None):
+    def create_superuser(self, email, firstName,middleName, lastName,location,yoe,phone,dob,gender,password=None):
         # creates and saves a superuser
-        user = self.create_user(email,password=password,firstName=firstName,middleName=middleName,lastName=lastName,yoe=yoe,phone=phone,dob=dob,gender=gender)
+        user = self.create_user(email,password=password,firstName=firstName,middleName=middleName,lastName=lastName,location=location,yoe=yoe,phone=phone,dob=dob,gender=gender)
         user.is_admin = True
         user.is_staff = True
         user.save(using=self.db)
@@ -67,6 +67,7 @@ class User(AbstractBaseUser):
     skill = models.CharField(max_length=200)
     about = models.TextField()
     phone = models.CharField(max_length=12)
+    location = models.CharField(max_length=200,default='null')
     dob = models.DateField(default=date(1900, 1, 1))
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='NA')
     created_at = models.DateTimeField(auto_now_add=True)
