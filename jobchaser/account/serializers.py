@@ -16,6 +16,9 @@ class WorkExperienceSerializer(serializers.ModelSerializer) :
     class Meta:
         model = WorkExperience
         fields = ['id','organisation','topSkill','current','start', 'end']       
+        extra_kwargs = {
+            'end': {'allow_null': True}
+        }
         
 class UserRegistrationSerializer(serializers.ModelSerializer):
     confirmPassword = serializers.CharField(style={'input_type':'password'}, write_only=True)

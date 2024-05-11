@@ -49,7 +49,7 @@ class WorkExperience(models.Model):
     topSkill =models.CharField(max_length=100)
     current = models.CharField(max_length=3, choices=STILL_WORK_CHOICES, default="NA")
     start= models.DateField(default=timezone.now)
-    end= models.DateField(default=timezone.now)
+    end= models.DateField(default=timezone.now,null=True,blank=True)
     
 class User(AbstractBaseUser):
     GENDER_CHOICES = (
