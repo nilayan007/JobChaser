@@ -155,17 +155,17 @@ class AlgorithmView(APIView):
             
             filtered_data = filtered_data.sort_values(by=["similarities"], ascending=False)
 
-            df1 = filtered_data.head(5)
-            
+            df1 = filtered_data.head(20)
+            df2 = filtered_data.head(5)
             skills_list = df1['required_skills'].str.split(',').tolist()
             skills_list = [skill for sublist in skills_list for skill in sublist]
             remaining_skills = [skill for skill in skills_list if skill not in user_skills]
             skill_counts = Counter(remaining_skills)
-            top_skills1 = [skill for skill, _ in skill_counts.most_common(3)]
-        
-            df1['required_skills'] = df1['required_skills'].apply(lambda x: x.split(','))
-            print(df1[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
-            response_data = df1[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
+            top_skills1 = [skill for skill, _ in skill_counts.most_common(4)]
+            print(top_skills1)
+            df2['required_skills'] = df2['required_skills'].apply(lambda x: x.split(','))
+            print(df2[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
+            response_data = df2[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
 
         #     jobs = data['Job Title']
         #     skills = data['Key Skills'].apply(lambda x: str(x)) # Convert to string
@@ -249,19 +249,19 @@ class FindAlgorithmView(APIView):
             filtered_data = data[data['MIN_Needed_Exp'] <= user_exp]
             filtered_data=filtered_data[filtered_data['MAX_Needed_Exp']>=user_exp]            
             filtered_data = filtered_data.sort_values(by=["similarities"], ascending=False)            
-            df1 = filtered_data.head(5)
-            
+            df1 = filtered_data.head(20)
+            df2 = filtered_data.head(5)
             skills_list = df1['required_skills'].str.split(',').tolist()
             skills_list = [skill for sublist in skills_list for skill in sublist]
             remaining_skills = [skill for skill in skills_list if skill not in user_skills]
             skill_counts = Counter(remaining_skills)
-            top_skills1 = [skill for skill, _ in skill_counts.most_common(3)]
+            top_skills1 = [skill for skill, _ in skill_counts.most_common(4)]
     
                     
-            df1['required_skills'] = df1['required_skills'].apply(lambda x: x.split(','))
+            df2['required_skills'] = df2['required_skills'].apply(lambda x: x.split(','))
             
-            print(df1[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
-            response_data = df1[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
+            print(df2[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
+            response_data = df2[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
             
         #     jobs = data['Job Title']
         #     skills = data['Key Skills'].apply(lambda x: str(x)) # Convert to string
