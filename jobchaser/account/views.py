@@ -161,9 +161,8 @@ class AlgorithmView(APIView):
             skills_list = [skill for sublist in skills_list for skill in sublist]
             remaining_skills = [skill for skill in skills_list if skill not in user_skills]
             skill_counts = Counter(remaining_skills)
-            top_skills = [skill for skill, _ in skill_counts.most_common(3)]
-            top_skills1=[item.lower() for item in top_skills]
-            df1['required_skills'] = df1['required_skills'].str.lower()
+            top_skills1 = [skill for skill, _ in skill_counts.most_common(3)]
+        
             df1['required_skills'] = df1['required_skills'].apply(lambda x: x.split(','))
             print(df1[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
             response_data = df1[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
@@ -256,10 +255,9 @@ class FindAlgorithmView(APIView):
             skills_list = [skill for sublist in skills_list for skill in sublist]
             remaining_skills = [skill for skill in skills_list if skill not in user_skills]
             skill_counts = Counter(remaining_skills)
-            top_skills = [skill for skill, _ in skill_counts.most_common(3)]
-            top_skills1=[item.lower() for item in top_skills]
+            top_skills1 = [skill for skill, _ in skill_counts.most_common(3)]
+    
                     
-            df1['required_skills'] = df1['required_skills'].str.lower()
             df1['required_skills'] = df1['required_skills'].apply(lambda x: x.split(','))
             
             print(df1[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
