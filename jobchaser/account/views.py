@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
+from collections import Counter
 
 # token generator
 def get_tokens_for_user(user):
@@ -154,9 +154,17 @@ class AlgorithmView(APIView):
             filtered_data=filtered_data[filtered_data['MAX_Needed_Exp']>=user_exp]
             
             filtered_data = filtered_data.sort_values(by=["similarities"], ascending=False)
+
+            df1 = filtered_data.head(5)
             
-            df1 = filtered_data.head(10)
-        
+            skills_list = df1['required_skills'].str.split(',').tolist()
+            skills_list = [skill for sublist in skills_list for skill in sublist]
+            remaining_skills = [skill for skill in skills_list if skill not in user_skills]
+            skill_counts = Counter(remaining_skills)
+            top_skills = [skill for skill, _ in skill_counts.most_common(3)]
+            top_skills1=[item.lower() for item in top_skills]
+            df1['required_skills'] = df1['required_skills'].str.lower()
+            df1['required_skills'] = df1['required_skills'].apply(lambda x: x.split(','))
             print(df1[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
             response_data = df1[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
 
@@ -186,7 +194,7 @@ class AlgorithmView(APIView):
             #ALGORITHM LOGIC ENDS 
 
             
-            return Response({'data': response_data}, status=status.HTTP_200_OK)
+            return Response({'data': response_data,"top_skills": top_skills1}, status=status.HTTP_200_OK)
         except Exception as e:
             error_msg = f"Error processing CSV file: {str(e)}"
             print(error_msg)
@@ -219,52 +227,44 @@ class FindAlgorithmView(APIView):
                 raise ValueError("Failed to load CSV data")
 
             # Explicitly replace NaN values with an empty string
-            data['required_skills'] = data['required_skills'].fillna('')
-            
-            
-        
+            data['required_skills'] = data['required_skills'].fillna('')        
             # ALGORITHM LOGIC STARTS
-            jobs = data['job_post']
-        
+            jobs = data['job_post']        
             skills = data['required_skills']
-            #print(jobs) 
-        
-            data['required_skills'] = data['required_skills'].str.upper()
-        
-            data.drop(data.columns[[0]],axis=1 ,inplace=True)
-        
-            #data['Needed_Exp'] = data['Needed_Exp'].astype(int)
-        
+            #print(jobs)         
+            data['required_skills'] = data['required_skills'].str.upper()       
+            data.drop(data.columns[[0]],axis=1 ,inplace=True)        
+            #data['Needed_Exp'] = data['Needed_Exp'].astype(int)        
             #data['Needed_Exp'].unique().astype(int)
-            vectorizer=TfidfVectorizer()
-                     
-            skill_vectors=vectorizer.fit_transform(skills)
-            
-            user_vector = vectorizer.transform(user_skills)
-            
-            type(user_skills)
-            
-            similarities = cosine_similarity(user_vector, skill_vectors)
-            
+            vectorizer=TfidfVectorizer()                     
+            skill_vectors=vectorizer.fit_transform(skills)           
+            user_vector = vectorizer.transform(user_skills)           
+            type(user_skills)           
+            similarities = cosine_similarity(user_vector, skill_vectors)            
             lst=[]
             for i,column in enumerate(similarities.T):
-                lst.append(sum(column)/len(data.iat[i,4].split(",")))
-            
-            data.insert(6,"similarities",lst,True)
-            
-            data=data.sort_values(by=["similarities"],ascending=False)
-            
+                lst.append(sum(column)/len(data.iat[i,4].split(",")))            
+            data.insert(6,"similarities",lst,True)            
+            data=data.sort_values(by=["similarities"],ascending=False)            
             #filtered_data = data[data['Needed_Exp'] <= user_exp]
             filtered_data = data[data['MIN_Needed_Exp'] <= user_exp]
-            filtered_data=filtered_data[filtered_data['MAX_Needed_Exp']>=user_exp]
+            filtered_data=filtered_data[filtered_data['MAX_Needed_Exp']>=user_exp]            
+            filtered_data = filtered_data.sort_values(by=["similarities"], ascending=False)            
+            df1 = filtered_data.head(5)
             
-            filtered_data = filtered_data.sort_values(by=["similarities"], ascending=False)
+            skills_list = df1['required_skills'].str.split(',').tolist()
+            skills_list = [skill for sublist in skills_list for skill in sublist]
+            remaining_skills = [skill for skill in skills_list if skill not in user_skills]
+            skill_counts = Counter(remaining_skills)
+            top_skills = [skill for skill, _ in skill_counts.most_common(3)]
+            top_skills1=[item.lower() for item in top_skills]
+                    
+            df1['required_skills'] = df1['required_skills'].str.lower()
+            df1['required_skills'] = df1['required_skills'].apply(lambda x: x.split(','))
             
-            df1 = filtered_data.head(10)
-        
             print(df1[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
             response_data = df1[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
-
+            
         #     jobs = data['Job Title']
         #     skills = data['Key Skills'].apply(lambda x: str(x)) # Convert to string
         #     #data.drop(data.columns[[1]], axis=1, inplace=True)
@@ -291,7 +291,7 @@ class FindAlgorithmView(APIView):
             #ALGORITHM LOGIC ENDS 
 
             
-            return Response({'data': response_data}, status=status.HTTP_200_OK)
+            return Response({'data': response_data,"top_skills": top_skills1}, status=status.HTTP_200_OK)
         except Exception as e:
             error_msg = f"Error processing CSV file: {str(e)}"
             print(error_msg)

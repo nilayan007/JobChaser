@@ -50,6 +50,7 @@ class WorkExperience(models.Model):
     current = models.CharField(max_length=3, choices=STILL_WORK_CHOICES, default="NA")
     start= models.DateField(default=timezone.now)
     end= models.DateField(default=timezone.now,null=True,blank=True)
+    jobPost = models.CharField(max_length=50,default='null')
     
 class User(AbstractBaseUser):
     GENDER_CHOICES = (
@@ -66,7 +67,7 @@ class User(AbstractBaseUser):
     moe = models.PositiveIntegerField(default=0)
     skill = models.CharField(max_length=200)
     about = models.TextField()
-    phone = models.CharField(max_length=12)
+    phone = models.CharField(max_length=20)
     location = models.CharField(max_length=200,default='null')
     dob = models.DateField(default=date(1900, 1, 1))
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='NA')

@@ -18,7 +18,7 @@ class EducationSerializer(serializers.ModelSerializer):
 class WorkExperienceSerializer(serializers.ModelSerializer) :
     class Meta:
         model = WorkExperience
-        fields = ['id','organisation','topSkill','current','start', 'end']       
+        fields = ['id','organisation','topSkill','current','jobPost','start', 'end']       
         extra_kwargs = {
             'end': {'allow_null': True}
         }
