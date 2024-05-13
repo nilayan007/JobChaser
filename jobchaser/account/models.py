@@ -33,11 +33,11 @@ class CustomUserManager(BaseUserManager):
 
 class Education(models.Model):
     user = models.ForeignKey('User', related_name='user_educations', on_delete=models.CASCADE) #forword reference
-    degree = models.CharField(max_length=100)
-    specialisation = models.CharField(max_length=100)
+    degree = models.CharField(max_length=500)
+    specialisation = models.CharField(max_length=500)
     start = models.DateField(default=timezone.now)
     end = models.DateField(default=timezone.now)
-    school = models.CharField(max_length=100)
+    school = models.CharField(max_length=500)
 
 class WorkExperience(models.Model):
     STILL_WORK_CHOICES = [
@@ -45,12 +45,12 @@ class WorkExperience(models.Model):
         ('No', 'No'),
     ]
     user = models.ForeignKey('User', related_name='user_workexperience', on_delete=models.CASCADE) #forword reference
-    organisation=models.CharField(max_length=100)
-    topSkill =models.CharField(max_length=100)
+    organisation=models.CharField(max_length=500)
+    topSkill =models.CharField(max_length=500)
     current = models.CharField(max_length=3, choices=STILL_WORK_CHOICES, default="NA")
     start= models.DateField(default=timezone.now)
     end= models.DateField(default=timezone.now,null=True,blank=True)
-    jobPost = models.CharField(max_length=50,default='null')
+    jobPost = models.CharField(max_length=500,default='null')
     
 class User(AbstractBaseUser):
     GENDER_CHOICES = (
@@ -60,15 +60,15 @@ class User(AbstractBaseUser):
     )
 
     email = models.EmailField(unique=True,max_length=255)
-    firstName = models.CharField(max_length=30)
-    middleName = models.CharField(max_length=30, default=' ')
-    lastName = models.CharField(max_length=30)
+    firstName = models.CharField(max_length=100)
+    middleName = models.CharField(max_length=100, default=' ')
+    lastName = models.CharField(max_length=100)
     yoe = models.PositiveIntegerField(default=0)
     moe = models.PositiveIntegerField(default=0)
-    skill = models.CharField(max_length=200)
+    skill = models.CharField(max_length=500)
     about = models.TextField()
     phone = models.CharField(max_length=20)
-    location = models.CharField(max_length=200,default='null')
+    location = models.CharField(max_length=500,default='null')
     dob = models.DateField(default=date(1900, 1, 1))
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='NA')
     created_at = models.DateTimeField(auto_now_add=True)
