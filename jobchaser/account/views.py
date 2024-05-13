@@ -213,6 +213,7 @@ class FindAlgorithmView(APIView):
             user_exp = serializer.validated_data.get('yoe')
             original_skills = skills1.split(',')
             user_skills = [item.upper() for item in original_skills]
+            print(user_skills)
     
         print(user_exp)
         print(user_skills)
@@ -251,12 +252,21 @@ class FindAlgorithmView(APIView):
             filtered_data = filtered_data.sort_values(by=["similarities"], ascending=False)            
             df1 = filtered_data.head(20)
             df2 = filtered_data.head(5)
+            # skills_list = df1['required_skills'].str.split(',').tolist()
+            # skills_list = [skill for sublist in skills_list for skill in sublist]
+            # remaining_skills = [skill for skill in skills_list if skill not in user_skills]
+            # print(remaining_skills)
+            # skill_counts = Counter(remaining_skills)
+            # top_skills1 = [skill for skill, _ in skill_counts.most_common(4)]
             skills_list = df1['required_skills'].str.split(',').tolist()
             skills_list = [skill for sublist in skills_list for skill in sublist]
+            # skills_list
             remaining_skills = [skill for skill in skills_list if skill not in user_skills]
+            remaining_skills
+            #from collections import Counter
             skill_counts = Counter(remaining_skills)
             top_skills1 = [skill for skill, _ in skill_counts.most_common(4)]
-    
+            print(top_skills1)
                     
             df2['required_skills'] = df2['required_skills'].apply(lambda x: x.split(','))
             

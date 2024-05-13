@@ -61,7 +61,7 @@ class User(AbstractBaseUser):
 
     email = models.EmailField(unique=True,max_length=255)
     firstName = models.CharField(max_length=100)
-    middleName = models.CharField(max_length=100, default=' ')
+    middleName = models.CharField(max_length=100, default='')
     lastName = models.CharField(max_length=100)
     yoe = models.PositiveIntegerField(default=0)
     moe = models.PositiveIntegerField(default=0)

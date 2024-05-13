@@ -33,7 +33,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'password', 'confirmPassword', 'firstName', 'middleName', 'lastName', 'yoe','moe', 'skill', 'about','dob', 'gender', 'education','work','phone','location']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
+            'middleName': {'allow_blank': True}
         }
 
     def validate(self, attrs):
@@ -41,7 +42,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         confirmPassword = attrs.get('confirmPassword')
         if password != confirmPassword:
             raise serializers.ValidationError('Password and confirm password do not match')
+        # Allow an empty string for middleName field
         return attrs
+    
+
 
     def create(self, validated_data):
         educations_data = validated_data.pop('education', None)  # Retrieve education data
