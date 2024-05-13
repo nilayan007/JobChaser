@@ -134,7 +134,16 @@ class AlgorithmView(APIView):
             vectorizer=TfidfVectorizer()
                      
             skill_vectors=vectorizer.fit_transform(skills)
-            
+            for i in range(len(user_skills)):
+                if user_skills[i] == "C":
+                    user_skills[i] = "C LANGUAGE"
+                elif user_skills[i] == "C++":
+                    user_skills[i] = "CPP"
+                elif user_skills[i]=="R":
+                    user_skills[i]="MATLAB"
+                elif user_skills[i]=="C#":
+                    user_skills[i]="C HAS"  
+ 
             user_vector = vectorizer.transform(user_skills)
             
             type(user_skills)
@@ -237,7 +246,17 @@ class FindAlgorithmView(APIView):
             #data['Needed_Exp'] = data['Needed_Exp'].astype(int)        
             #data['Needed_Exp'].unique().astype(int)
             vectorizer=TfidfVectorizer()                     
-            skill_vectors=vectorizer.fit_transform(skills)           
+            skill_vectors=vectorizer.fit_transform(skills)  
+            for i in range(len(user_skills)):
+                if user_skills[i] == "C":
+                    user_skills[i] = "C LANGUAGE"
+                elif user_skills[i] == "C++":
+                    user_skills[i] = "CPP"
+                elif user_skills[i]=="R":
+                    user_skills[i]="MATLAB"
+                elif user_skills[i]=="C#":
+                    user_skills[i]="C HAS"  
+        
             user_vector = vectorizer.transform(user_skills)           
             type(user_skills)           
             similarities = cosine_similarity(user_vector, skill_vectors)            
@@ -273,31 +292,6 @@ class FindAlgorithmView(APIView):
             print(df2[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
             response_data = df2[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
             
-        #     jobs = data['Job Title']
-        #     skills = data['Key Skills'].apply(lambda x: str(x)) # Convert to string
-        #     #data.drop(data.columns[[1]], axis=1, inplace=True)
-        #     vectorizer = TfidfVectorizer()
-        #     skill_vectors = vectorizer.fit_transform(skills)
-        #     user_vector = vectorizer.transform(user_skills)
-        #     similarities = cosine_similarity(user_vector, skill_vectors)
-        #     lst=[]
-        #     for i,column in enumerate(similarities.T):
-        #         #if isinstance(data.iat[i, 1], str):
-        #         lst.append(sum(column)/len(data.iat[i,1].split("|")))
-        #         #else:
-        # # Handle non-string values (e.g., assign 0 or another value)
-        #             #lst.append(0)  # Assuming 0 similarity for non-strings    
-        #     #print(*lst)
-        #     data.insert(10,"similarities",lst,True)
-        #     data=data.sort_values(by=["similarities"],ascending=False)
-        #     filtered_data = data[data['Needed_Exp'] <= user_exp]
-        #     #df1=data.head(5)
-        #     filtered_data = filtered_data.sort_values(by=["similarities"], ascending=False)
-        #     df1 = filtered_data.head(5)
-        #     print(df1[["Job Title","sal","Location","similarities","Needed_Exp"]])
-
-            #ALGORITHM LOGIC ENDS 
-
             
             return Response({'data': response_data,"top_skills": top_skills1}, status=status.HTTP_200_OK)
         except Exception as e:
