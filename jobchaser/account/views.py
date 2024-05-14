@@ -98,7 +98,10 @@ class AlgorithmView(APIView):
         #if serializer.is_valid():
     
        
-        skills1 = serializer.data.get('skill')
+        skills11 = serializer.data.get('skill')
+        split_string = [word.strip() for word in skills11.split(",")]
+        skills1 = ",".join(split_string)
+        print(skills1)
         user_exp = serializer.data.get('yoe')
         original_skills = skills1.split(',')
         user_skills =  [item.upper() for item in original_skills]
@@ -171,7 +174,7 @@ class AlgorithmView(APIView):
             remaining_skills = [skill for skill in skills_list if skill not in user_skills]
             skill_counts = Counter(remaining_skills)
             top_skills1 = [skill for skill, _ in skill_counts.most_common(4)]
-            print(top_skills1)
+            #print(top_skills1)
             df2['required_skills'] = df2['required_skills'].apply(lambda x: x.split(','))
             print(df2[["job_post","company","required_skills","job_location",'MIN_Needed_Exp','MAX_Needed_Exp',"similarities"]])
             response_data = df2[["job_post","company","job_description","required_skills", "job_location", "MIN_Needed_Exp", "MAX_Needed_Exp"]].to_dict(orient='records')
@@ -218,7 +221,10 @@ class FindAlgorithmView(APIView):
     def post(self, request, format=None):
         serializer = AlgorithmInputSerializer(data=request.data)
         if serializer.is_valid():
-            skills1 = serializer.validated_data.get('skill')
+            skills11 = serializer.data.get('skill')
+            split_string = [word.strip() for word in skills11.split(",")]
+            skills1 = ",".join(split_string)
+            print(skills1)
             user_exp = serializer.validated_data.get('yoe')
             original_skills = skills1.split(',')
             user_skills = [item.upper() for item in original_skills]
