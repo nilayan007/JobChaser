@@ -279,7 +279,20 @@ class FindAlgorithmView(APIView):
             # top_skills1 = [skill for skill, _ in skill_counts.most_common(4)]
             skills_list = df1['required_skills'].str.split(',').tolist()
             skills_list = [skill for sublist in skills_list for skill in sublist]
-            # skills_list
+            #skills_list
+            # Convert skills lists to sets for faster comparison
+            # skills_set = set(skills_list)
+            # user_skills_set = set(user_skills)
+
+            # # Find the remaining skills by calculating the set difference
+            # remaining_skills_set = skills_set - user_skills_set
+
+            # # Convert the remaining skills set back to a list
+            # remaining_skills = list(remaining_skills_set)
+            # print(remaining_skills)    
+            
+            
+            
             remaining_skills = [skill for skill in skills_list if skill not in user_skills]
             remaining_skills
             #from collections import Counter
