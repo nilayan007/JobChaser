@@ -52,7 +52,7 @@ class UserLoginView(APIView):
             token = get_tokens_for_user(user) #generating token
             return Response({'token':token,'msg':'login success'},status = status.HTTP_200_OK)
         else:
-            return Response({'errors':{'non_field_errors':['email or password is not valid ']}},status = status.HTTP_404_NOT_FOUND)
+            return Response({'errors':{'non_field_errors':['email or password is not valid ']}},status = status.HTTP_401_UNAUTHORIZED)
         
     
 #user profile view   api
