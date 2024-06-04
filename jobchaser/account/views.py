@@ -146,6 +146,20 @@ class AlgorithmView(APIView):
                     user_skills[i]="MATLAB"
                 elif user_skills[i]=="C#":
                     user_skills[i]="C HAS"  
+                elif user_skills[i]=="CORE JAVA":
+                    user_skills[i]="JAVA"
+                elif user_skills[i]=="NODE.JS":
+                    user_skills[i]="NODEJS"
+                elif user_skills[i]=="NODE JS":
+                    user_skills[i]="NODEJS"
+                elif user_skills[i]=="NODE":
+                    user_skills[i]="NODEJS"
+                elif user_skills[i]=="REACT.JS":
+                    user_skills[i]="REACTJS"
+                elif user_skills[i]=="REACT JS":
+                    user_skills[i]="REACTJS"
+                elif user_skills[i]=="REACT":
+                    user_skills[i]="REACTJS"       
  
             user_vector = vectorizer.transform(user_skills)
             
@@ -261,7 +275,21 @@ class FindAlgorithmView(APIView):
                 elif user_skills[i]=="R":
                     user_skills[i]="MATLAB"
                 elif user_skills[i]=="C#":
-                    user_skills[i]="C HAS"  
+                    user_skills[i]="C HAS" 
+                elif user_skills[i]=="CORE JAVA":
+                    user_skills[i]="JAVA"
+                elif user_skills[i]=="NODE.JS":
+                    user_skills[i]="NODEJS"
+                elif user_skills[i]=="NODE JS":
+                    user_skills[i]="NODEJS"
+                elif user_skills[i]=="NODE":
+                    user_skills[i]="NODEJS"
+                elif user_skills[i]=="REACT.JS":
+                    user_skills[i]="REACTJS"
+                elif user_skills[i]=="REACT JS":
+                    user_skills[i]="REACTJS"
+                elif user_skills[i]=="REACT":
+                    user_skills[i]="REACTJS"            
         
             user_vector = vectorizer.transform(user_skills)           
             type(user_skills)           
